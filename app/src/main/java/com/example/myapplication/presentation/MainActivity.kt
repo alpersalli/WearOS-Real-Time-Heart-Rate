@@ -5,6 +5,7 @@
  */
 
 package com.example.myapplication.presentation
+import MqttHandler
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -14,12 +15,16 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.myapplication.R
 
 
 class MainActivity : Activity() {
+    private val BROKER_URL = "tcp://deudthealthcare.eastus.cloudapp.azure.com"
+    private val CLIENT_ID = "alpersalli"
+    private lateinit var mqttHandler: MqttHandler
     private var mSensorManager: SensorManager? = null
     private var mHeartSensor: Sensor? = null
     private var mTextView: TextView? = null
@@ -38,6 +43,8 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mqttHandler = MqttHandler()
+        mqttHandler.connect(BROKER_URL, CLIENT_ID)
         // Check for body sensor permission
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.BODY_SENSORS)
             != PackageManager.PERMISSION_GRANTED) {
@@ -73,6 +80,7 @@ class MainActivity : Activity() {
             mHeartSensor,
             SensorManager.SENSOR_DELAY_NORMAL
         )
+        publishMessage("test","35")
     }
 
     //
@@ -82,5 +90,15 @@ class MainActivity : Activity() {
     }
     companion object {
         const val REQUEST_BODY_SENSOR_PERMISSION = 1
+    }
+
+    private fun publishMessage(topic: String, message: String) {
+        Toast.makeText(this, "Publishing message: $message", Toast.LENGTH_SHORT).show()
+        mqttHandler.publish(topic, message)
+    }
+
+    private fun subscribeToTopic(topic: String) {
+        Toast.makeText(this, "Subscribing to topic $topic", Toast.LENGTH_SHORT).show()
+        mqttHandler.subscribe(topic)
     }
 }
