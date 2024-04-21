@@ -33,6 +33,8 @@ class MainActivity : Activity() {
             if(event.values[0] > 0){
                 println(event.values[0])
                 mTextView?.text  = event.values[0].toString()
+                publishMessage("test",event.values[0].toString())
+
             }
 
         }
@@ -80,7 +82,7 @@ class MainActivity : Activity() {
             mHeartSensor,
             SensorManager.SENSOR_DELAY_NORMAL
         )
-        publishMessage("test","35")
+        
     }
 
     //
@@ -93,7 +95,7 @@ class MainActivity : Activity() {
     }
 
     private fun publishMessage(topic: String, message: String) {
-        Toast.makeText(this, "Publishing message: $message", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "Publishing message: $message", Toast.LENGTH_SHORT).show()
         mqttHandler.publish(topic, message)
     }
 
